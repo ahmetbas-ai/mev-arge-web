@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEV Ar-Ge | Elektronik Kart Tasarımı &amp; Gömülü Yazılım</title>
+<meta name="description" content="MEV Ar-Ge; elektronik kart tasarımı, imalatı, gömülü yazılım, Ar-Ge, endüstriyel çözümler ve ithalat-ihracat alanlarında hizmet veren Konya merkezli teknoloji şirketi.">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          sans: ['Inter', 'sans-serif'],
+        },
+        colors: {
+          'mev-gray': {
+            DEFAULT: '#7a8290',
+            50: '#f5f6f7',
+            100: '#e8eaec',
+            200: '#cdd2d8',
+            300: '#a7afba',
+            400: '#7a8290',
+            500: '#5f6774',
+            600: '#4c525d',
+            700: '#3f444d',
+            800: '#363a41',
+            900: '#0b0d10',
+          },
+          'mev-navy': {
+            DEFAULT: '#1b2a6b',
+            50: '#eef0fb',
+            100: '#d7ddf4',
+            200: '#b0bce9',
+            300: '#8091dd',
+            400: '#4f63cd',
+            500: '#2e3fb0',
+            600: '#22308e',
+            700: '#1b2a6b',
+            800: '#151f4d',
+            900: '#0c1230',
+            950: '#070a1c',
+          },
+        },
+        boxShadow: {
+          'glow-navy': '0 0 40px -5px rgba(27, 42, 107, 0.45)',
+          'glow-soft': '0 0 60px -15px rgba(27, 42, 107, 0.6)',
+        },
+        animation: {
+          'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          'float': 'float 6s ease-in-out infinite',
+          'float-delay': 'float 6s ease-in-out 2s infinite',
+          'spin-slow': 'spin 18s linear infinite',
+          'spin-slow-rev': 'spin 24s linear infinite reverse',
+          'dash': 'dash 3.5s linear infinite',
+          'fade-up': 'fadeUp .8s cubic-bezier(.16,1,.3,1) forwards',
+          'marquee': 'marquee 28s linear infinite',
+        },
+        keyframes: {
+          float: {
+            '0%, 100%': { transform: 'translateY(0px)' },
+            '50%': { transform: 'translateY(-18px)' },
+          },
+          dash: {
+            to: { 'stroke-dashoffset': '0' },
+          },
+          fadeUp: {
+            from: { opacity: 0, transform: 'translateY(24px)' },
+            to: { opacity: 1, transform: 'translateY(0)' },
+          },
+          marquee: {
+            '0%': { transform: 'translateX(0)' },
+            '100%': { transform: 'translateX(-50%)' },
+          },
+        },
+      },
+    },
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #06070a; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #06070a; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#1b2a6b,#3f444d); border-radius: 10px; }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(122,130,144,0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(122,130,144,0.09) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .noise::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .glass {
+    background: rgba(15, 17, 23, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .text-gradient {
+    background: linear-gradient(90deg, #eef0fb 0%, #a7afba 45%, #8091dd 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .card-hover {
+    transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s cubic-bezier(.16,1,.3,1), border-color .45s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px -25px rgba(27,42,107,0.55);
+    border-color: rgba(128,145,221,0.55);
+  }
+
+  .circuit-line {
+    stroke-dasharray: 8 8;
+    animation: dash 3.5s linear infinite;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+  }
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: "";
+    position: absolute; left: 0; bottom: -6px;
+    width: 0%; height: 2px;
+    background: linear-gradient(90deg,#8091dd,#4f63cd);
+    transition: width .35s cubic-bezier(.16,1,.3,1);
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  .btn-shine { position: relative; overflow: hidden; }
+  .btn-shine::before {
+    content: "";
+    position: absolute; top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left .7s ease;
+  }
+  .btn-shine:hover::before { left: 125%; }
+
+  .lang-toggle-thumb { transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+
+  .modal-backdrop { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+
+  input:-webkit-autofill, textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #10131a inset !important;
+    -webkit-text-fill-color: #e8eaec !important;
+  }
+
+  .clip-hex { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+
+  .loader-dot { animation: pulse 1s ease-in-out infinite; }
+
+  @media (max-width: 767px) {
+    .mobile-menu-open { transform: translateX(0) !important; }
+  }
+</style>
+</head>
+
+<body class="bg-[#06070a] text-mev-gray-100 antialiased selection:bg-mev-navy-500 selection:text-white overflow-x-hidden">
+
+<!-- ============ BACKGROUND FX (fixed) ============ -->
+<div class="fixed inset-0 -z-20 grid-bg opacity-60"></div>
+<div class="fixed inset-0 -z-20 noise relative"></div>
+<div class="fixed top-[-10%] left-[-10%] w-[45vw] h-[45vw] bg-mev-navy-700/25 rounded-full blur-[140px] -z-10 animate-pulse-slow"></div>
+<div class="fixed bottom-[-15%] right-[-10%] w-[50vw] h-[50vw] bg-mev-navy-500/15 rounded-full blur-[160px] -z-10 animate-pulse-slow"></div>
+
+<!-- ============ HEADER ============ -->
+<header id="site-header" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div id="header-inner" class="flex items-center justify-between h-20 transition-all duration-500">
+
+      <!-- Logo -->
+      <a href="#home" class="flex items-center gap-3 group">
+        <svg viewBox="0 0 220 90" class="h-9 sm:h-10 w-auto" aria-label="MEV Ar-Ge logo">
+          <defs>
+            <linearGradient id="mevGray" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#a7afba"/>
+              <stop offset="100%" stop-color="#5f6774"/>
+            </linearGradient>
+            <linearGradient id="mevNavy" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#3f52c9"/>
+              <stop offset="100%" stop-color="#151f4d"/>
+            </linearGradient>
+          </defs>
+          <!-- M -->
+          <polyline points="4,78 4,14 34,56 64,14 64,78" fill="none" stroke="url(#mevGray)" stroke-width="13" stroke-linecap="square" stroke-linejoin="round"/>
+          <!-- E -->
+          <g fill="url(#mevNavy)">
+            <rect x="80" y="14" width="52" height="12"/>
+            <rect x="80" y="39" width="42" height="12"/>
+            <rect x="80" y="64" width="52" height="12"/>
+            <rect x="80" y="14" width="12" height="62"/>
+          </g>
+          <!-- V -->
+          <polyline points="140,14 168,78 196,14" fill="none" stroke="url(#mevGray)" stroke-width="13" stroke-linecap="square" stroke-linejoin="round"/>
+        </svg>
+        <div class="hidden sm:flex flex-col leading-none border-l border-white/10 pl-3">
+          <span class="font-display font-semibold tracking-[0.2em] text-white text-sm" data-i18n="logo.line1">AR-GE</span>
+          <span class="text-[10px] tracking-[0.3em] text-mev-gray-300" data-i18n="logo.line2">ELEKTRONİK &amp; YAZILIM</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden lg:flex items-center gap-9 font-medium text-sm text-mev-gray-100/90">
+        <a href="#home" class="nav-link" data-i18n="nav.home">Anasayfa</a>
+        <a href="#about" class="nav-link" data-i18n="nav.about">Hakkımızda</a>
+        <a href="#services" class="nav-link" data-i18n="nav.services">Hizmetler</a>
+        <a href="#manuals" class="nav-link" data-i18n="nav.manuals">Kılavuzlar</a>
+        <a href="#contact" class="nav-link" data-i18n="nav.contact">İletişim</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- Lang Switch -->
+        <button id="lang-toggle" type="button" class="relative flex items-center w-[84px] h-9 rounded-full bg-white/5 border border-white/10 px-1 text-xs font-semibold text-mev-gray-300">
+          <span class="lang-toggle-thumb absolute top-1 left-1 h-7 w-[38px] rounded-full bg-gradient-to-br from-mev-navy-500 to-mev-navy-700 shadow-glow-navy"></span>
+          <span class="relative z-10 w-1/2 text-center" id="lang-label-tr">TR</span>
+          <span class="relative z-10 w-1/2 text-center" id="lang-label-en">EN</span>
+        </button>
+
+        <a href="#contact" class="hidden md:inline-flex btn-shine items-center gap-2 rounded-full bg-mev-navy-600 hover:bg-mev-navy-500 transition-colors text-white text-sm font-semibold px-5 py-2.5 shadow-glow-navy" data-i18n="nav.cta">
+          Teklif Al
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button id="mobile-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full border border-white/10 text-mev-gray-100">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Nav Panel -->
+  <div id="mobile-menu" class="lg:hidden fixed top-0 right-0 h-screen w-[78%] max-w-sm bg-[#0a0c11]/98 border-l border-white/10 translate-x-full transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] z-50 flex flex-col">
+    <div class="flex items-center justify-between h-20 px-6 border-b border-white/10">
+      <span class="font-display font-semibold tracking-widest text-white">MENU</span>
+      <button id="mobile-close" class="w-10 h-10 flex items-center justify-center rounded-full border border-white/10"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <nav class="flex flex-col gap-1 px-6 py-8 text-lg font-medium">
+      <a href="#home" class="mobile-link py-3 border-b border-white/5" data-i18n="nav.home">Anasayfa</a>
+      <a href="#about" class="mobile-link py-3 border-b border-white/5" data-i18n="nav.about">Hakkımızda</a>
+      <a href="#services" class="mobile-link py-3 border-b border-white/5" data-i18n="nav.services">Hizmetler</a>
+      <a href="#manuals" class="mobile-link py-3 border-b border-white/5" data-i18n="nav.manuals">Kılavuzlar</a>
+      <a href="#contact" class="mobile-link py-3 border-b border-white/5" data-i18n="nav.contact">İletişim</a>
+    </nav>
+    <div class="mt-auto px-6 py-8 border-t border-white/10 text-sm text-mev-gray-300 space-y-3">
+      <a href="tel:+905396863365" class="flex items-center gap-3"><i class="fa-solid fa-phone text-mev-navy-300"></i>+90 539 686 33 65</a>
+      <a href="mailto:ahmet.bas@mevarge.com" class="flex items-center gap-3"><i class="fa-solid fa-envelope text-mev-navy-300"></i>ahmet.bas@mevarge.com</a>
+    </div>
+  </div>
+  <div id="mobile-overlay" class="lg:hidden fixed inset-0 bg-black/60 opacity-0 pointer-events-none transition-opacity duration-500 z-40"></div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section id="home" class="relative min-h-screen flex items-center pt-28 pb-20 overflow-hidden">
+
+  <!-- circuit svg background -->
+  <svg class="absolute inset-0 w-full h-full opacity-40 -z-10" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 800">
+    <g stroke="#4f63cd" stroke-width="1.4" fill="none" opacity="0.55">
+      <path class="circuit-line" d="M0,120 H220 L260,160 H460 L500,120 H760" />
+      <path class="circuit-line" d="M0,300 H150 L190,340 H420 L460,300 H700 L740,340 H1000" style="animation-delay:.6s" />
+      <path class="circuit-line" d="M1200,180 H1000 L960,220 H760 L720,180 H540" style="animation-delay:1.1s" />
+      <path class="circuit-line" d="M1200,460 H980 L940,500 H680 L640,460 H360 L320,500 H100" style="animation-delay:1.7s" />
+      <path class="circuit-line" d="M0,620 H260 L300,660 H560 L600,620 H900 L940,660 H1200" style="animation-delay:2.2s" />
+    </g>
+    <g fill="#8091dd">
+      <circle cx="260" cy="160" r="4"/>
+      <circle cx="500" cy="120" r="4"/>
+      <circle cx="190" cy="340" r="4"/>
+      <circle cx="460" cy="300" r="4"/>
+      <circle cx="960" cy="220" r="4"/>
+      <circle cx="720" cy="180" r="4"/>
+      <circle cx="940" cy="500" r="4"/>
+      <circle cx="320" cy="500" r="4"/>
+      <circle cx="300" cy="660" r="4"/>
+      <circle cx="940" cy="660" r="4"/>
+    </g>
+  </svg>
+
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 w-full grid lg:grid-cols-2 gap-16 items-center">
+    <div>
+      <div data-reveal class="inline-flex items-center gap-2 rounded-full border border-mev-navy-400/40 bg-mev-navy-500/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-mev-navy-100 mb-7">
+        <span class="w-1.5 h-1.5 rounded-full bg-mev-navy-300 animate-pulse"></span>
+        <span data-i18n="hero.badge">2023'TEN BERİ KONYA'DAN DÜNYAYA</span>
+      </div>
+      <h1 data-reveal style="transition-delay:.1s" class="font-display font-bold text-4xl sm:text-5xl xl:text-6xl leading-[1.08] text-white mb-6">
+        <span data-i18n="hero.title1">Elektronikte</span>
+        <span class="text-gradient block" data-i18n="hero.title2">Sınırları Yeniden Tasarlıyoruz</span>
+      </h1>
+      <p data-reveal style="transition-delay:.2s" class="text-mev-gray-200 text-lg leading-relaxed max-w-xl mb-10" data-i18n="hero.desc">
+        MEV Ar-Ge; elektronik kart tasarımından gömülü yazılıma, Ar-Ge'den endüstriyel çözümlere kadar uçtan uca mühendislik gücüyle fikirlerinizi üretime dönüştürür.
+      </p>
+      <div data-reveal style="transition-delay:.3s" class="flex flex-wrap gap-4">
+        <a href="#services" class="btn-shine inline-flex items-center gap-2 rounded-full bg-mev-navy-600 hover:bg-mev-navy-500 transition-colors text-white font-semibold px-7 py-3.5 shadow-glow-navy">
+          <span data-i18n="hero.cta1">Hizmetlerimiz</span>
+          <i class="fa-solid fa-arrow-right text-sm"></i>
+        </a>
+        <a href="#contact" class="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-mev-navy-300 hover:bg-white/5 transition-colors text-white font-semibold px-7 py-3.5">
+          <i class="fa-solid fa-circle-play text-sm"></i>
+          <span data-i18n="hero.cta2">Bizimle İletişime Geçin</span>
+        </a>
+      </div>
+
+      <div data-reveal style="transition-delay:.4s" class="flex flex-wrap gap-8 mt-14 pt-8 border-t border-white/10">
+        <div>
+          <div class="font-display font-bold text-3xl text-white">2023</div>
+          <div class="text-xs text-mev-gray-300 tracking-wide mt-1" data-i18n="hero.stat1">Kuruluş Yılı</div>
+        </div>
+        <div>
+          <div class="font-display font-bold text-3xl text-white">5+</div>
+          <div class="text-xs text-mev-gray-300 tracking-wide mt-1" data-i18n="hero.stat2">Uzmanlık Alanı</div>
+        </div>
+        <div>
+          <div class="font-display font-bold text-3xl text-white">TR</div>
+          <div class="text-xs text-mev-gray-300 tracking-wide mt-1" data-i18n="hero.stat3">Konya Merkezli</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero visual -->
+    <div data-reveal style="transition-delay:.2s" class="relative hidden lg:flex items-center justify-center h-[520px]">
+      <div class="absolute w-[420px] h-[420px] rounded-full border border-mev-navy-400/20 animate-spin-slow"></div>
+      <div class="absolute w-[340px] h-[340px] rounded-full border border-dashed border-mev-gray-400/20 animate-spin-slow-rev"></div>
+
+      <div class="absolute w-16 h-16 top-6 left-6 clip-hex bg-mev-navy-600/80 flex items-center justify-center shadow-glow-navy animate-float">
+        <i class="fa-solid fa-microchip text-white text-xl"></i>
+      </div>
+      <div class="absolute w-14 h-14 bottom-10 right-2 clip-hex bg-mev-gray-500/70 flex items-center justify-center animate-float-delay">
+        <i class="fa-solid fa-bolt text-white text-lg"></i>
+      </div>
+      <div class="absolute w-12 h-12 bottom-24 left-0 clip-hex bg-mev-navy-500/70 flex items-center justify-center animate-float">
+        <i class="fa-solid fa-code text-white"></i>
+      </div>
+
+      <div class="relative w-72 h-72 rounded-3xl glass border border-white/10 shadow-glow-soft flex flex-col items-center justify-center gap-4 rotate-3">
+        <svg viewBox="0 0 220 90" class="h-16 w-auto opacity-95">
+          <polyline points="4,78 4,14 34,56 64,14 64,78" fill="none" stroke="#a7afba" stroke-width="13" stroke-linecap="square" stroke-linejoin="round"/>
+          <g fill="#4f63cd">
+            <rect x="80" y="14" width="52" height="12"/>
+            <rect x="80" y="39" width="42" height="12"/>
+            <rect x="80" y="64" width="52" height="12"/>
+            <rect x="80" y="14" width="12" height="62"/>
+          </g>
+          <polyline points="140,14 168,78 196,14" fill="none" stroke="#a7afba" stroke-width="13" stroke-linecap="square" stroke-linejoin="round"/>
+        </svg>
+        <p class="text-xs tracking-[0.3em] text-mev-gray-300" data-i18n="hero.card">TASARIM · İMALAT · YAZILIM</p>
+      </div>
+    </div>
+  </div>
+
+  <a href="#about" class="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 text-mev-gray-300 text-xs tracking-widest animate-bounce">
+    <span data-i18n="hero.scroll">KEŞFET</span>
+    <i class="fa-solid fa-chevron-down"></i>
+  </a>
+</section>
+
+<!-- ============ LOGO / KEYWORD MARQUEE ============ -->
+<div class="border-y border-white/10 bg-white/[0.02] py-6 overflow-hidden">
+  <div class="flex whitespace-nowrap animate-marquee text-mev-gray-400 font-display text-sm tracking-[0.25em]">
+    <div class="flex shrink-0 gap-16 pr-16">
+      <span data-i18n="marquee.1">PCB TASARIM</span>
+      <span data-i18n="marquee.2">GÖMÜLÜ YAZILIM</span>
+      <span data-i18n="marquee.3">AR-GE</span>
+      <span data-i18n="marquee.4">ENDÜSTRİYEL ÇÖZÜMLER</span>
+      <span data-i18n="marquee.5">İTHALAT &amp; İHRACAT</span>
+      <span data-i18n="marquee.6">KONYA · TÜRKİYE</span>
+    </div>
+    <div class="flex shrink-0 gap-16 pr-16" aria-hidden="true">
+      <span data-i18n="marquee.1">PCB TASARIM</span>
+      <span data-i18n="marquee.2">GÖMÜLÜ YAZILIM</span>
+      <span data-i18n="marquee.3">AR-GE</span>
+      <span data-i18n="marquee.4">ENDÜSTRİYEL ÇÖZÜMLER</span>
+      <span data-i18n="marquee.5">İTHALAT &amp; İHRACAT</span>
+      <span data-i18n="marquee.6">KONYA · TÜRKİYE</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<section id="about" class="relative py-28">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-16 items-center">
+
+    <div data-reveal class="relative">
+      <div class="absolute -inset-6 bg-mev-navy-600/10 blur-3xl rounded-full -z-10"></div>
+      <div class="relative rounded-3xl border border-white/10 glass p-8 sm:p-10 overflow-hidden">
+        <svg class="absolute -right-10 -bottom-10 w-56 opacity-10" viewBox="0 0 200 200"><circle cx="100" cy="100" r="95" fill="none" stroke="#8091dd" stroke-width="2" stroke-dasharray="6 10"/></svg>
+        <i class="fa-solid fa-quote-left text-mev-navy-400 text-3xl mb-6"></i>
+        <p class="text-xl sm:text-2xl font-display text-white leading-snug mb-8" data-i18n="about.quote">
+          "Konya'dan yola çıkarak, elektronik donanım ve yazılımı tek çatı altında birleştiren, üretim gücünü mühendislik disipliniyle buluşturan bir teknoloji ekibiyiz."
+        </p>
+        <div class="grid grid-cols-2 gap-6 pt-6 border-t border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-mev-navy-600/30 flex items-center justify-center text-mev-navy-200"><i class="fa-solid fa-location-dot"></i></div>
+            <div>
+              <div class="text-white font-semibold text-sm" data-i18n="about.locTitle">Konum</div>
+              <div class="text-mev-gray-300 text-xs" data-i18n="about.locValue">Selçuklu, Konya</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-mev-navy-600/30 flex items-center justify-center text-mev-navy-200"><i class="fa-solid fa-calendar"></i></div>
+            <div>
+              <div class="text-white font-semibold text-sm" data-i18n="about.yearTitle">Kuruluş</div>
+              <div class="text-mev-gray-300 text-xs">2023</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-reveal style="transition-delay:.15s">
+      <span class="text-mev-navy-300 font-semibold tracking-[0.25em] text-xs" data-i18n="about.eyebrow">HAKKIMIZDA</span>
+      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mt-4 mb-6" data-i18n="about.title">Mühendislik Odaklı Bir Vizyon</h2>
+      <p class="text-mev-gray-200 leading-relaxed mb-6" data-i18n="about.p1">
+        2023 yılında Konya'da kurulan MEV Ar-Ge, elektronik kart tasarımı ve imalatından gömülü yazılım geliştirmeye, araştırma-geliştirme faaliyetlerinden endüstriyel otomasyon çözümlerine kadar geniş bir yelpazede hizmet sunar.
+      </p>
+      <p class="text-mev-gray-200 leading-relaxed mb-8" data-i18n="about.p2">
+        Genç ve dinamik mühendislik kadromuzla, yurt içi ve yurt dışı iş ortaklarımıza ithalat-ihracat kanallarıyla erişilebilir, güvenilir ve yenilikçi teknoloji ürünleri üretiyoruz.
+      </p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <i class="fa-solid fa-bullseye text-mev-navy-300 mt-1"></i>
+          <div>
+            <div class="text-white font-semibold text-sm mb-1" data-i18n="about.missionTitle">Misyonumuz</div>
+            <div class="text-mev-gray-300 text-xs leading-relaxed" data-i18n="about.missionText">Yenilikçi elektronik ve yazılım çözümleriyle sanayiye değer katmak.</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <i class="fa-solid fa-eye text-mev-navy-300 mt-1"></i>
+          <div>
+            <div class="text-white font-semibold text-sm mb-1" data-i18n="about.visionTitle">Vizyonumuz</div>
+            <div class="text-mev-gray-300 text-xs leading-relaxed" data-i18n="about.visionText">Ar-Ge odaklı üretimde bölgesinde referans gösterilen bir marka olmak.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section id="services" class="relative py-28 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div data-reveal class="text-center max-w-2xl mx-auto mb-16">
+      <span class="text-mev-navy-300 font-semibold tracking-[0.25em] text-xs" data-i18n="services.eyebrow">NELER YAPIYORUZ</span>
+      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mt-4 mb-5" data-i18n="services.title">Uçtan Uca Teknoloji Hizmetleri</h2>
+      <p class="text-mev-gray-300" data-i18n="services.desc">Tasarımdan üretime, yazılımdan lojistiğe kadar tüm süreci tek bir çatı altında yönetiyoruz.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div data-reveal class="card-hover group relative rounded-3xl border border-white/10 bg-white/[0.03] p-8 overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-mev-navy-500/10 blur-3xl group-hover:bg-mev-navy-400/20 transition-colors"></div>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-mev-navy-500 to-mev-navy-800 flex items-center justify-center text-white text-xl mb-6 shadow-glow-navy">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <h3 class="text-white font-display font-semibold text-lg mb-3" data-i18n="services.s1.title">Elektronik Kart Tasarım &amp; İmalatı</h3>
+        <p class="text-mev-gray-300 text-sm leading-relaxed" data-i18n="services.s1.desc">Şematik tasarımdan PCB düzenine, prototipten seri üretime kadar profesyonel devre kartı çözümleri.</p>
+      </div>
+
+      <div data-reveal style="transition-delay:.05s" class="card-hover group relative rounded-3xl border border-white/10 bg-white/[0.03] p-8 overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-mev-navy-500/10 blur-3xl group-hover:bg-mev-navy-400/20 transition-colors"></div>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-mev-navy-500 to-mev-navy-800 flex items-center justify-center text-white text-xl mb-6 shadow-glow-navy">
+          <i class="fa-solid fa-code"></i>
+        </div>
+        <h3 class="text-white font-display font-semibold text-lg mb-3" data-i18n="services.s2.title">Gömülü Yazılım Geliştirme</h3>
+        <p class="text-mev-gray-300 text-sm leading-relaxed" data-i18n="services.s2.desc">Mikrodenetleyici tabanlı firmware, gerçek zamanlı sistemler ve donanım-yazılım entegrasyonu.</p>
+      </div>
+
+      <div data-reveal style="transition-delay:.1s" class="card-hover group relative rounded-3xl border border-white/10 bg-white/[0.03] p-8 overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-mev-navy-500/10 blur-3xl group-hover:bg-mev-navy-400/20 transition-colors"></div>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-mev-navy-500 to-mev-navy-800 flex items-center justify-center text-white text-xl mb-6 shadow-glow-navy">
+          <i class="fa-solid fa-flask"></i>
+        </div>
+        <h3 class="text-white font-display font-semibold text-lg mb-3" data-i18n="services.s3.title">Araştırma &amp; Geliştirme</h3>
+        <p class="text-mev-gray-300 text-sm leading-relaxed" data-i18n="services.s3.desc">Yenilikçi ürün fikirlerini fizibiliteden prototipe taşıyan uçtan uca Ar-Ge süreçleri.</p>
+      </div>
+
+      <div data-reveal style="transition-delay:.15s" class="card-hover group relative rounded-3xl border border-white/10 bg-white/[0.03] p-8 overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-mev-navy-500/10 blur-3xl group-hover:bg-mev-navy-400/20 transition-colors"></div>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-mev-navy-500 to-mev-navy-800 flex items-center justify-center text-white text-xl mb-6 shadow-glow-navy">
+          <i class="fa-solid fa-industry"></i>
+        </div>
+        <h3 class="text-white font-display font-semibold text-lg mb-3" data-i18n="services.s4.title">Endüstriyel Çözümler</h3>
+        <p class="text-mev-gray-300 text-sm leading-relaxed" data-i18n="services.s4.desc">Üretim hatları için otomasyon, kontrol sistemleri ve özel elektronik ekipman tasarımı.</p>
+      </div>
+
+      <div data-reveal style="transition-delay:.2s" class="card-hover group relative rounded-3xl border border-white/10 bg-white/[0.03] p-8 overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-mev-navy-500/10 blur-3xl group-hover:bg-mev-navy-400/20 transition-colors"></div>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-mev-navy-500 to-mev-navy-800 flex items-center justify-center text-white text-xl mb-6 shadow-glow-navy">
+          <i class="fa-solid fa-ship"></i>
+        </div>
+        <h3 class="text-white font-display font-semibold text-lg mb-3" data-i18n="services.s5.title">İthalat &amp; İhracat</h3>
+        <p class="text-mev-gray-300 text-sm leading-relaxed" data-i18n="services.s5.desc">Elektronik bileşen ve ürünlerde güvenilir tedarik zinciri ile uluslararası ticaret operasyonları.</p>
+      </div>
+
+      <div data-reveal style="transition-delay:.25s" class="relative rounded-3xl border border-mev-navy-400/30 bg-gradient-to-br from-mev-navy-700/40 to-mev-navy-900/40 p-8 flex flex-col justify-between overflow-hidden">
+        <svg class="absolute -right-6 -bottom-6 w-40 opacity-20" viewBox="0 0 100 100"><path d="M0 50 H30 L38 35 H62 L70 50 H100" stroke="#8091dd" stroke-width="2" fill="none"/></svg>
+        <div>
+          <h3 class="text-white font-display font-semibold text-lg mb-3" data-i18n="services.cta.title">Projeniz mi var?</h3>
+          <p class="text-mev-gray-200 text-sm leading-relaxed mb-6" data-i18n="services.cta.desc">Fikrinizi birlikte üretime dönüştürelim. Ekibimiz sizinle iletişime geçsin.</p>
+        </div>
+        <a href="#contact" class="btn-shine inline-flex items-center justify-center gap-2 rounded-full bg-white text-mev-navy-900 font-semibold px-6 py-3 text-sm w-fit">
+          <span data-i18n="services.cta.btn">Bize Ulaşın</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANUALS ============ -->
+<section id="manuals" class="relative py-28 border-t border-white/5 bg-white/[0.015]">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div data-reveal class="text-center max-w-2xl mx-auto mb-16">
+      <span class="text-mev-navy-300 font-semibold tracking-[0.25em] text-xs" data-i18n="manuals.eyebrow">DOKÜMANTASYON</span>
+      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mt-4 mb-5" data-i18n="manuals.title">Kullanım Kılavuzları</h2>
+      <p class="text-mev-gray-300" data-i18n="manuals.desc">Ürünlerimize ait teknik dokümanlara ve kullanım kılavuzlarına aşağıdan erişebilirsiniz.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" id="manuals-grid">
+      <!-- Cards injected identically for each model, static markup below -->
+      <div data-reveal class="manual-card card-hover rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex flex-col items-center text-center"
+           data-model="Model 4200" data-link="https://drive.google.com/file/d/1Q4KB0L7EbWSYoM7BKUZsZsBMxfCWTAsD/view">
+        <div class="w-16 h-16 rounded-2xl bg-mev-navy-600/25 flex items-center justify-center text-mev-navy-200 text-2xl mb-5"><i class="fa-solid fa-file-pdf"></i></div>
+        <h3 class="text-white font-display font-semibold mb-1">Model 4200</h3>
+        <p class="text-mev-gray-400 text-xs mb-5" data-i18n="manuals.tag">Kullanım Kılavuzu</p>
+        <button class="open-manual mt-auto w-full inline-flex items-center justify-center gap-2 rounded-full border border-white/15 hover:border-mev-navy-300 hover:bg-mev-navy-500/10 transition-colors text-white text-sm font-medium px-4 py-2.5">
+          <i class="fa-solid fa-eye text-xs"></i>
+          <span data-i18n="manuals.view">Görüntüle</span>
+        </button>
+      </div>
+
+      <div data-reveal style="transition-delay:.05s" class="manual-card card-hover rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex flex-col items-center text-center"
+           data-model="Model 4201" data-link="https://drive.google.com/file/d/1MbbRjGLFwkAey7ZkoZT69TGI5uYEdQhn/view">
+        <div class="w-16 h-16 rounded-2xl bg-mev-navy-600/25 flex items-center justify-center text-mev-navy-200 text-2xl mb-5"><i class="fa-solid fa-file-pdf"></i></div>
+        <h3 class="text-white font-display font-semibold mb-1">Model 4201</h3>
+        <p class="text-mev-gray-400 text-xs mb-5" data-i18n="manuals.tag">Kullanım Kılavuzu</p>
+        <button class="open-manual mt-auto w-full inline-flex items-center justify-center gap-2 rounded-full border border-white/15 hover:border-mev-navy-300 hover:bg-mev-navy-500/10 transition-colors text-white text-sm font-medium px-4 py-2.5">
+          <i class="fa-solid fa-eye text-xs"></i>
+          <span data-i18n="manuals.view">Görüntüle</span>
+        </button>
+      </div>
+
+      <div data-reveal style="transition-delay:.1s" class="manual-card card-hover rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex flex-col items-center text-center"
+           data-model="Model 4202" data-link="https://drive.google.com/file/d/1weYzgMUOWNRlBW32dfTiWbu2ZNP2Vqa8/view">
+        <div class="w-16 h-16 rounded-2xl bg-mev-navy-600/25 flex items-center justify-center text-mev-navy-200 text-2xl mb-5"><i class="fa-solid fa-file-pdf"></i></div>
+        <h3 class="text-white font-display font-semibold mb-1">Model 4202</h3>
+        <p class="text-mev-gray-400 text-xs mb-5" data-i18n="manuals.tag">Kullanım Kılavuzu</p>
+        <button class="open-manual mt-auto w-full inline-flex items-center justify-center gap-2 rounded-full border border-white/15 hover:border-mev-navy-300 hover:bg-mev-navy-500/10 transition-colors text-white text-sm font-medium px-4 py-2.5">
+          <i class="fa-solid fa-eye text-xs"></i>
+          <span data-i18n="manuals.view">Görüntüle</span>
+        </button>
+      </div>
+
+      <div data-reveal style="transition-delay:.15s" class="manual-card card-hover rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex flex-col items-center text-center"
+           data-model="Model 4203" data-link="https://drive.google.com/file/d/1Hz0SBYGFWukT1rYXteQEVXEIOmorctTL/view">
+        <div class="w-16 h-16 rounded-2xl bg-mev-navy-600/25 flex items-center justify-center text-mev-navy-200 text-2xl mb-5"><i class="fa-solid fa-file-pdf"></i></div>
+        <h3 class="text-white font-display font-semibold mb-1">Model 4203</h3>
+        <p class="text-mev-gray-400 text-xs mb-5" data-i18n="manuals.tag">Kullanım Kılavuzu</p>
+        <button class="open-manual mt-auto w-full inline-flex items-center justify-center gap-2 rounded-full border border-white/15 hover:border-mev-navy-300 hover:bg-mev-navy-500/10 transition-colors text-white text-sm font-medium px-4 py-2.5">
+          <i class="fa-solid fa-eye text-xs"></i>
+          <span data-i18n="manuals.view">Görüntüle</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANUAL MODAL ============ -->
+<div id="manual-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 sm:p-8">
+  <div id="manual-modal-backdrop" class="absolute inset-0 bg-black/70 modal-backdrop"></div>
+  <div class="relative w-full max-w-3xl rounded-3xl border border-white/10 bg-[#0b0d13] shadow-glow-soft overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-mev-navy-600/30 flex items-center justify-center text-mev-navy-200"><i class="fa-solid fa-file-pdf"></i></div>
+        <div>
+          <div id="manual-modal-title" class="text-white font-display font-semibold">Model 4200</div>
+          <div class="text-mev-gray-400 text-xs" data-i18n="manuals.tag">Kullanım Kılavuzu</div>
+        </div>
+      </div>
+      <button id="manual-modal-close" class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-mev-gray-200 hover:text-white hover:border-mev-navy-300 transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="p-6">
+      <div class="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40" style="aspect-ratio:16/10">
+        <iframe id="manual-modal-frame" src="" class="w-full h-full" allow="autoplay"></iframe>
+      </div>
+      <p class="text-mev-gray-400 text-xs mt-4 leading-relaxed" data-i18n="manuals.modalHint">
+        Belge görüntülenemiyorsa aşağıdaki butonu kullanarak Google Drive üzerinde açabilirsiniz.
+      </p>
+      <div class="flex flex-wrap gap-3 mt-5">
+        <a id="manual-modal-open" href="#" target="_blank" rel="noopener" class="btn-shine inline-flex items-center gap-2 rounded-full bg-mev-navy-600 hover:bg-mev-navy-500 transition-colors text-white text-sm font-semibold px-6 py-3">
+          <i class="fa-brands fa-google-drive text-xs"></i>
+          <span data-i18n="manuals.openDrive">Drive'da Aç</span>
+        </a>
+        <button id="manual-modal-close2" class="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 transition-colors text-white text-sm font-semibold px-6 py-3" data-i18n="manuals.close">
+          Kapat
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WHY US ============ -->
+<section class="relative py-28 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-3 gap-10">
+    <div data-reveal class="lg:col-span-1">
+      <span class="text-mev-navy-300 font-semibold tracking-[0.25em] text-xs" data-i18n="why.eyebrow">NEDEN MEV AR-GE</span>
+      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mt-4" data-i18n="why.title">Fikirden Üretime Güvenilir Ortak</h2>
+      <p class="text-mev-gray-300 mt-5 leading-relaxed" data-i18n="why.desc">Genç mühendislik vizyonumuzu, üretim disipliniyle birleştirerek her projede ölçülebilir değer üretiyoruz.</p>
+    </div>
+    <div class="lg:col-span-2 grid sm:grid-cols-2 gap-6">
+      <div data-reveal class="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <i class="fa-solid fa-gauge-high text-mev-navy-300 text-xl mt-1"></i>
+        <div>
+          <h4 class="text-white font-semibold mb-1" data-i18n="why.f1.title">Hızlı Prototipleme</h4>
+          <p class="text-mev-gray-400 text-sm leading-relaxed" data-i18n="why.f1.desc">Fikirden çalışan prototipe kısa sürede ulaşan çevik geliştirme süreci.</p>
+        </div>
+      </div>
+      <div data-reveal style="transition-delay:.05s" class="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <i class="fa-solid fa-shield-halved text-mev-navy-300 text-xl mt-1"></i>
+        <div>
+          <h4 class="text-white font-semibold mb-1" data-i18n="why.f2.title">Kalite &amp; Güvenilirlik</h4>
+          <p class="text-mev-gray-400 text-sm leading-relaxed" data-i18n="why.f2.desc">Titiz test süreçleriyle üretimde tutarlı ve dayanıklı sonuçlar.</p>
+        </div>
+      </div>
+      <div data-reveal style="transition-delay:.1s" class="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <i class="fa-solid fa-users-gear text-mev-navy-300 text-xl mt-1"></i>
+        <div>
+          <h4 class="text-white font-semibold mb-1" data-i18n="why.f3.title">Uzman Mühendislik Kadrosu</h4>
+          <p class="text-mev-gray-400 text-sm leading-relaxed" data-i18n="why.f3.desc">Donanım ve yazılımda deneyimli, çok disiplinli ekip.</p>
+        </div>
+      </div>
+      <div data-reveal style="transition-delay:.15s" class="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <i class="fa-solid fa-earth-europe text-mev-navy-300 text-xl mt-1"></i>
+        <div>
+          <h4 class="text-white font-semibold mb-1" data-i18n="why.f4.title">Global Tedarik Ağı</h4>
+          <p class="text-mev-gray-400 text-sm leading-relaxed" data-i18n="why.f4.desc">İthalat-ihracat altyapımızla uluslararası tedarik ve dağıtım imkânı.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" class="relative py-28 border-t border-white/5 bg-white/[0.015]">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div data-reveal class="text-center max-w-2xl mx-auto mb-16">
+      <span class="text-mev-navy-300 font-semibold tracking-[0.25em] text-xs" data-i18n="contact.eyebrow">İLETİŞİM</span>
+      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mt-4 mb-5" data-i18n="contact.title">Sizden Haber Almak İsteriz</h2>
+      <p class="text-mev-gray-300" data-i18n="contact.desc">Projeniz hakkında konuşmak için formu doldurun ya da doğrudan bizimle iletişime geçin.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-5 gap-8">
+      <!-- Info -->
+      <div data-reveal class="lg:col-span-2 flex flex-col gap-5">
+        <div class="rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-mev-navy-600/30 flex items-center justify-center text-mev-navy-200 shrink-0"><i class="fa-solid fa-location-dot"></i></div>
+          <div>
+            <h4 class="text-white font-semibold mb-1" data-i18n="contact.addressTitle">Adres</h4>
+            <p class="text-mev-gray-300 text-sm leading-relaxed">Fatih Mh. Koray Sk. No:27<br>Selçuklu / Konya, Türkiye</p>
+          </div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-mev-navy-600/30 flex items-center justify-center text-mev-navy-200 shrink-0"><i class="fa-solid fa-phone"></i></div>
+          <div>
+            <h4 class="text-white font-semibold mb-1" data-i18n="contact.phoneTitle">Telefon</h4>
+            <a href="tel:+905396863365" class="text-mev-gray-300 text-sm hover:text-mev-navy-200 transition-colors">+90 539 686 33 65</a>
+          </div>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/[0.03] p-7 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-mev-navy-600/30 flex items-center justify-center text-mev-navy-200 shrink-0"><i class="fa-solid fa-envelope"></i></div>
+          <div>
+            <h4 class="text-white font-semibold mb-1" data-i18n="contact.emailTitle">E-posta</h4>
+            <a href="mailto:ahmet.bas@mevarge.com" class="text-mev-gray-300 text-sm hover:text-mev-navy-200 transition-colors">ahmet.bas@mevarge.com</a>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-mev-navy-400/30 bg-gradient-to-br from-mev-navy-700/30 to-mev-navy-900/30 p-7">
+          <h4 class="text-white font-semibold mb-2" data-i18n="contact.hoursTitle">Çalışma Saatleri</h4>
+          <div class="text-mev-gray-300 text-sm flex justify-between py-1.5 border-b border-white/5"><span data-i18n="contact.weekdays">Pazartesi - Cuma</span><span>09:00 - 18:00</span></div>
+          <div class="text-mev-gray-300 text-sm flex justify-between py-1.5"><span data-i18n="contact.weekend">Cumartesi - Pazar</span><span data-i18n="contact.closed">Kapalı</span></div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div data-reveal style="transition-delay:.1s" class="lg:col-span-3 rounded-3xl border border-white/10 bg-white/[0.03] p-7 sm:p-10 relative overflow-hidden">
+        <svg class="absolute -top-10 -right-10 w-48 opacity-10" viewBox="0 0 100 100"><path d="M0 30 H40 L48 45 H100" stroke="#8091dd" stroke-width="2" fill="none"/></svg>
+
+        <form id="contact-form" class="relative space-y-5" novalidate>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-semibold tracking-wide text-mev-gray-300 mb-2" data-i18n="contact.form.name">Ad Soyad</label>
+              <input required name="name" type="text" class="w-full rounded-xl bg-[#10131a] border border-white/10 focus:border-mev-navy-400 focus:ring-2 focus:ring-mev-navy-500/30 outline-none transition-all px-4 py-3 text-sm text-white placeholder:text-mev-gray-500" data-i18n-placeholder="contact.form.namePh" placeholder="Adınız Soyadınız">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold tracking-wide text-mev-gray-300 mb-2" data-i18n="contact.form.email">E-posta</label>
+              <input required name="email" type="email" class="w-full rounded-xl bg-[#10131a] border border-white/10 focus:border-mev-navy-400 focus:ring-2 focus:ring-mev-navy-500/30 outline-none transition-all px-4 py-3 text-sm text-white placeholder:text-mev-gray-500" data-i18n-placeholder="contact.form.emailPh" placeholder="ornek@eposta.com">
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-semibold tracking-wide text-mev-gray-300 mb-2" data-i18n="contact.form.phone">Telefon</label>
+              <input name="phone" type="tel" class="w-full rounded-xl bg-[#10131a] border border-white/10 focus:border-mev-navy-400 focus:ring-2 focus:ring-mev-navy-500/30 outline-none transition-all px-4 py-3 text-sm text-white placeholder:text-mev-gray-500" placeholder="+90 5__ ___ __ __">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold tracking-wide text-mev-gray-300 mb-2" data-i18n="contact.form.subject">Konu</label>
+              <select name="subject" class="w-full rounded-xl bg-[#10131a] border border-white/10 focus:border-mev-navy-400 focus:ring-2 focus:ring-mev-navy-500/30 outline-none transition-all px-4 py-3 text-sm text-white">
+                <option data-i18n="services.s1.title">Elektronik Kart Tasarım &amp; İmalatı</option>
+                <option data-i18n="services.s2.title">Gömülü Yazılım Geliştirme</option>
+                <option data-i18n="services.s3.title">Araştırma &amp; Geliştirme</option>
+                <option data-i18n="services.s4.title">Endüstriyel Çözümler</option>
+                <option data-i18n="services.s5.title">İthalat &amp; İhracat</option>
+                <option data-i18n="contact.form.other">Diğer</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold tracking-wide text-mev-gray-300 mb-2" data-i18n="contact.form.message">Mesajınız</label>
+            <textarea required name="message" rows="5" class="w-full rounded-xl bg-[#10131a] border border-white/10 focus:border-mev-navy-400 focus:ring-2 focus:ring-mev-navy-500/30 outline-none transition-all px-4 py-3 text-sm text-white placeholder:text-mev-gray-500 resize-none" data-i18n-placeholder="contact.form.messagePh" placeholder="Projenizden bahsedin..."></textarea>
+          </div>
+
+          <button type="submit" id="contact-submit" class="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-mev-navy-600 hover:bg-mev-navy-500 transition-colors text-white font-semibold px-8 py-3.5 shadow-glow-navy">
+            <span id="contact-submit-label" data-i18n="contact.form.submit">Mesajı Gönder</span>
+            <i class="fa-solid fa-paper-plane text-sm"></i>
+          </button>
+
+          <div id="contact-success" class="hidden items-center gap-3 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-4 text-emerald-300 text-sm">
+            <i class="fa-solid fa-circle-check"></i>
+            <span data-i18n="contact.form.success">Mesajınız alındı! En kısa sürede size dönüş yapacağız.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="relative border-t border-white/10 pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+      <div>
+        <svg viewBox="0 0 220 90" class="h-9 w-auto mb-5">
+          <polyline points="4,78 4,14 34,56 64,14 64,78" fill="none" stroke="#a7afba" stroke-width="13" stroke-linecap="square" stroke-linejoin="round"/>
+          <g fill="#4f63cd">
+            <rect x="80" y="14" width="52" height="12"/>
+            <rect x="80" y="39" width="42" height="12"/>
+            <rect x="80" y="64" width="52" height="12"/>
+            <rect x="80" y="14" width="12" height="62"/>
+          </g>
+          <polyline points="140,14 168,78 196,14" fill="none" stroke="#a7afba" stroke-width="13" stroke-linecap="square" stroke-linejoin="round"/>
+        </svg>
+        <p class="text-mev-gray-400 text-sm leading-relaxed" data-i18n="footer.desc">Elektronik kart tasarımı, gömülü yazılım ve endüstriyel çözümlerde güvenilir mühendislik ortağınız.</p>
+        <div class="flex gap-3 mt-6">
+          <a href="#" class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-mev-gray-300 hover:text-white hover:border-mev-navy-300 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="#" class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-mev-gray-300 hover:text-white hover:border-mev-navy-300 transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-mev-gray-300 hover:text-white hover:border-mev-navy-300 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div>
+        <h5 class="text-white font-display font-semibold mb-5" data-i18n="footer.linksTitle">Hızlı Bağlantılar</h5>
+        <ul class="space-y-3 text-sm text-mev-gray-400">
+          <li><a href="#about" class="hover:text-mev-navy-200 transition-colors" data-i18n="nav.about">Hakkımızda</a></li>
+          <li><a href="#services" class="hover:text-mev-navy-200 transition-colors" data-i18n="nav.services">Hizmetler</a></li>
+          <li><a href="#manuals" class="hover:text-mev-navy-200 transition-colors" data-i18n="nav.manuals">Kılavuzlar</a></li>
+          <li><a href="#contact" class="hover:text-mev-navy-200 transition-colors" data-i18n="nav.contact">İletişim</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-white font-display font-semibold mb-5" data-i18n="footer.servicesTitle">Hizmetlerimiz</h5>
+        <ul class="space-y-3 text-sm text-mev-gray-400">
+          <li data-i18n="services.s1.title">Elektronik Kart Tasarım &amp; İmalatı</li>
+          <li data-i18n="services.s2.title">Gömülü Yazılım Geliştirme</li>
+          <li data-i18n="services.s3.title">Araştırma &amp; Geliştirme</li>
+          <li data-i18n="services.s4.title">Endüstriyel Çözümler</li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-white font-display font-semibold mb-5" data-i18n="footer.contactTitle">İletişim</h5>
+        <ul class="space-y-3 text-sm text-mev-gray-400">
+          <li class="flex gap-2"><i class="fa-solid fa-location-dot mt-1 text-mev-navy-300"></i><span>Fatih Mh. Koray Sk. No:27, Selçuklu / Konya</span></li>
+          <li class="flex gap-2"><i class="fa-solid fa-phone mt-1 text-mev-navy-300"></i><a href="tel:+905396863365" class="hover:text-mev-navy-200 transition-colors">+90 539 686 33 65</a></li>
+          <li class="flex gap-2"><i class="fa-solid fa-envelope mt-1 text-mev-navy-300"></i><a href="mailto:ahmet.bas@mevarge.com" class="hover:text-mev-navy-200 transition-colors">ahmet.bas@mevarge.com</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-mev-gray-500">
+      <p><span id="footer-year"></span> MEV Ar-Ge. <span data-i18n="footer.rights">Tüm hakları saklıdır.</span></p>
+      <p data-i18n="footer.madeIn">Konya, Türkiye'de tasarlandı 🇹🇷</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to top -->
+<button id="back-to-top" class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-mev-navy-600 hover:bg-mev-navy-500 shadow-glow-navy text-white flex items-center justify-center opacity-0 pointer-events-none translate-y-4 transition-all duration-500">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script>
+/* ============================================================
+   TRANSLATIONS
+   ============================================================ */
+const translations = {
+  tr: {
+    "logo.line1": "AR-GE",
+    "logo.line2": "ELEKTRONİK & YAZILIM",
+    "nav.home": "Anasayfa",
+    "nav.about": "Hakkımızda",
+    "nav.services": "Hizmetler",
+    "nav.manuals": "Kılavuzlar",
+    "nav.contact": "İletişim",
+    "nav.cta": "Teklif Al",
+
+    "hero.badge": "2023'TEN BERİ KONYA'DAN DÜNYAYA",
+    "hero.title1": "Elektronikte",
+    "hero.title2": "Sınırları Yeniden Tasarlıyoruz",
+    "hero.desc": "MEV Ar-Ge; elektronik kart tasarımından gömülü yazılıma, Ar-Ge'den endüstriyel çözümlere kadar uçtan uca mühendislik gücüyle fikirlerinizi üretime dönüştürür.",
+    "hero.cta1": "Hizmetlerimiz",
+    "hero.cta2": "Bizimle İletişime Geçin",
+    "hero.stat1": "Kuruluş Yılı",
+    "hero.stat2": "Uzmanlık Alanı",
+    "hero.stat3": "Konya Merkezli",
+    "hero.card": "TASARIM · İMALAT · YAZILIM",
+    "hero.scroll": "KEŞFET",
+
+    "marquee.1": "PCB TASARIM",
+    "marquee.2": "GÖMÜLÜ YAZILIM",
+    "marquee.3": "AR-GE",
+    "marquee.4": "ENDÜSTRİYEL ÇÖZÜMLER",
+    "marquee.5": "İTHALAT & İHRACAT",
+    "marquee.6": "KONYA · TÜRKİYE",
+
+    "about.eyebrow": "HAKKIMIZDA",
+    "about.title": "Mühendislik Odaklı Bir Vizyon",
+    "about.p1": "2023 yılında Konya'da kurulan MEV Ar-Ge, elektronik kart tasarımı ve imalatından gömülü yazılım geliştirmeye, araştırma-geliştirme faaliyetlerinden endüstriyel otomasyon çözümlerine kadar geniş bir yelpazede hizmet sunar.",
+    "about.p2": "Genç ve dinamik mühendislik kadromuzla, yurt içi ve yurt dışı iş ortaklarımıza ithalat-ihracat kanallarıyla erişilebilir, güvenilir ve yenilikçi teknoloji ürünleri üretiyoruz.",
+    "about.quote": "\"Konya'dan yola çıkarak, elektronik donanım ve yazılımı tek çatı altında birleştiren, üretim gücünü mühendislik disipliniyle buluşturan bir teknoloji ekibiyiz.\"",
+    "about.locTitle": "Konum",
+    "about.locValue": "Selçuklu, Konya",
+    "about.yearTitle": "Kuruluş",
+    "about.missionTitle": "Misyonumuz",
+    "about.missionText": "Yenilikçi elektronik ve yazılım çözümleriyle sanayiye değer katmak.",
+    "about.visionTitle": "Vizyonumuz",
+    "about.visionText": "Ar-Ge odaklı üretimde bölgesinde referans gösterilen bir marka olmak.",
+
+    "services.eyebrow": "NELER YAPIYORUZ",
+    "services.title": "Uçtan Uca Teknoloji Hizmetleri",
+    "services.desc": "Tasarımdan üretime, yazılımdan lojistiğe kadar tüm süreci tek bir çatı altında yönetiyoruz.",
+    "services.s1.title": "Elektronik Kart Tasarım & İmalatı",
+    "services.s1.desc": "Şematik tasarımdan PCB düzenine, prototipten seri üretime kadar profesyonel devre kartı çözümleri.",
+    "services.s2.title": "Gömülü Yazılım Geliştirme",
+    "services.s2.desc": "Mikrodenetleyici tabanlı firmware, gerçek zamanlı sistemler ve donanım-yazılım entegrasyonu.",
+    "services.s3.title": "Araştırma & Geliştirme",
+    "services.s3.desc": "Yenilikçi ürün fikirlerini fizibiliteden prototipe taşıyan uçtan uca Ar-Ge süreçleri.",
+    "services.s4.title": "Endüstriyel Çözümler",
+    "services.s4.desc": "Üretim hatları için otomasyon, kontrol sistemleri ve özel elektronik ekipman tasarımı.",
+    "services.s5.title": "İthalat & İhracat",
+    "services.s5.desc": "Elektronik bileşen ve ürünlerde güvenilir tedarik zinciri ile uluslararası ticaret operasyonları.",
+    "services.cta.title": "Projeniz mi var?",
+    "services.cta.desc": "Fikrinizi birlikte üretime dönüştürelim. Ekibimiz sizinle iletişime geçsin.",
+    "services.cta.btn": "Bize Ulaşın",
+
+    "manuals.eyebrow": "DOKÜMANTASYON",
+    "manuals.title": "Kullanım Kılavuzları",
+    "manuals.desc": "Ürünlerimize ait teknik dokümanlara ve kullanım kılavuzlarına aşağıdan erişebilirsiniz.",
+    "manuals.tag": "Kullanım Kılavuzu",
+    "manuals.view": "Görüntüle",
+    "manuals.modalHint": "Belge görüntülenemiyorsa aşağıdaki butonu kullanarak Google Drive üzerinde açabilirsiniz.",
+    "manuals.openDrive": "Drive'da Aç",
+    "manuals.close": "Kapat",
+
+    "why.eyebrow": "NEDEN MEV AR-GE",
+    "why.title": "Fikirden Üretime Güvenilir Ortak",
+    "why.desc": "Genç mühendislik vizyonumuzu, üretim disipliniyle birleştirerek her projede ölçülebilir değer üretiyoruz.",
+    "why.f1.title": "Hızlı Prototipleme",
+    "why.f1.desc": "Fikirden çalışan prototipe kısa sürede ulaşan çevik geliştirme süreci.",
+    "why.f2.title": "Kalite & Güvenilirlik",
+    "why.f2.desc": "Titiz test süreçleriyle üretimde tutarlı ve dayanıklı sonuçlar.",
+    "why.f3.title": "Uzman Mühendislik Kadrosu",
+    "why.f3.desc": "Donanım ve yazılımda deneyimli, çok disiplinli ekip.",
+    "why.f4.title": "Global Tedarik Ağı",
+    "why.f4.desc": "İthalat-ihracat altyapımızla uluslararası tedarik ve dağıtım imkânı.",
+
+    "contact.eyebrow": "İLETİŞİM",
+    "contact.title": "Sizden Haber Almak İsteriz",
+    "contact.desc": "Projeniz hakkında konuşmak için formu doldurun ya da doğrudan bizimle iletişime geçin.",
+    "contact.addressTitle": "Adres",
+    "contact.phoneTitle": "Telefon",
+    "contact.emailTitle": "E-posta",
+    "contact.hoursTitle": "Çalışma Saatleri",
+    "contact.weekdays": "Pazartesi - Cuma",
+    "contact.weekend": "Cumartesi - Pazar",
+    "contact.closed": "Kapalı",
+    "contact.form.name": "Ad Soyad",
+    "contact.form.namePh": "Adınız Soyadınız",
+    "contact.form.email": "E-posta",
+    "contact.form.emailPh": "ornek@eposta.com",
+    "contact.form.phone": "Telefon",
+    "contact.form.subject": "Konu",
+    "contact.form.other": "Diğer",
+    "contact.form.message": "Mesajınız",
+    "contact.form.messagePh": "Projenizden bahsedin...",
+    "contact.form.submit": "Mesajı Gönder",
+    "contact.form.sending": "Gönderiliyor...",
+    "contact.form.success": "Mesajınız alındı! En kısa sürede size dönüş yapacağız.",
+    "contact.form.errorName": "Lütfen adınızı giriniz.",
+    "contact.form.errorEmail": "Lütfen geçerli bir e-posta adresi giriniz.",
+    "contact.form.errorMessage": "Lütfen mesajınızı giriniz.",
+
+    "footer.desc": "Elektronik kart tasarımı, gömülü yazılım ve endüstriyel çözümlerde güvenilir mühendislik ortağınız.",
+    "footer.linksTitle": "Hızlı Bağlantılar",
+    "footer.servicesTitle": "Hizmetlerimiz",
+    "footer.contactTitle": "İletişim",
+    "footer.rights": "Tüm hakları saklıdır.",
+    "footer.madeIn": "Konya, Türkiye'de tasarlandı 🇹🇷",
+  },
+  en: {
+    "logo.line1": "R&D",
+    "logo.line2": "ELECTRONICS & SOFTWARE",
+    "nav.home": "Home",
+    "nav.about": "About",
+    "nav.services": "Services",
+    "nav.manuals": "Manuals",
+    "nav.contact": "Contact",
+    "nav.cta": "Get a Quote",
+
+    "hero.badge": "FROM KONYA TO THE WORLD SINCE 2023",
+    "hero.title1": "Redesigning the",
+    "hero.title2": "Boundaries of Electronics",
+    "hero.desc": "MEV Ar-Ge turns your ideas into production with end-to-end engineering power — from PCB design to embedded software, from R&D to industrial solutions.",
+    "hero.cta1": "Our Services",
+    "hero.cta2": "Get in Touch",
+    "hero.stat1": "Founded",
+    "hero.stat2": "Core Fields",
+    "hero.stat3": "Based in Konya",
+    "hero.card": "DESIGN · MANUFACTURING · SOFTWARE",
+    "hero.scroll": "EXPLORE",
+
+    "marquee.1": "PCB DESIGN",
+    "marquee.2": "EMBEDDED SOFTWARE",
+    "marquee.3": "R&D",
+    "marquee.4": "INDUSTRIAL SOLUTIONS",
+    "marquee.5": "IMPORT & EXPORT",
+    "marquee.6": "KONYA · TÜRKİYE",
+
+    "about.eyebrow": "ABOUT US",
+    "about.title": "An Engineering-Driven Vision",
+    "about.p1": "Founded in 2023 in Konya, MEV Ar-Ge offers a broad range of services — from PCB design and manufacturing to embedded software development, from research & development to industrial automation solutions.",
+    "about.p2": "With our young and dynamic engineering team, we produce accessible, reliable and innovative technology products for our domestic and international partners through our import-export channels.",
+    "about.quote": "\"Starting from Konya, we are a technology team that unites electronic hardware and software under one roof, combining manufacturing power with engineering discipline.\"",
+    "about.locTitle": "Location",
+    "about.locValue": "Selçuklu, Konya",
+    "about.yearTitle": "Founded",
+    "about.missionTitle": "Our Mission",
+    "about.missionText": "To add value to industry with innovative electronic and software solutions.",
+    "about.visionTitle": "Our Vision",
+    "about.visionText": "To become a reference brand in R&D-driven manufacturing in our region.",
+
+    "services.eyebrow": "WHAT WE DO",
+    "services.title": "End-to-End Technology Services",
+    "services.desc": "We manage the entire process — from design to production, software to logistics — under one roof.",
+    "services.s1.title": "PCB Design & Manufacturing",
+    "services.s1.desc": "Professional circuit board solutions from schematic design and PCB layout to prototyping and series production.",
+    "services.s2.title": "Embedded Software Development",
+    "services.s2.desc": "Microcontroller-based firmware, real-time systems and hardware-software integration.",
+    "services.s3.title": "Research & Development",
+    "services.s3.desc": "End-to-end R&D processes that carry innovative product ideas from feasibility to prototype.",
+    "services.s4.title": "Industrial Solutions",
+    "services.s4.desc": "Automation, control systems and custom electronic equipment design for production lines.",
+    "services.s5.title": "Import & Export",
+    "services.s5.desc": "International trade operations with a reliable supply chain for electronic components and products.",
+    "services.cta.title": "Have a project?",
+    "services.cta.desc": "Let's turn your idea into production together. Our team will reach out to you.",
+    "services.cta.btn": "Contact Us",
+
+    "manuals.eyebrow": "DOCUMENTATION",
+    "manuals.title": "User Manuals",
+    "manuals.desc": "You can access the technical documents and user manuals for our products below.",
+    "manuals.tag": "User Manual",
+    "manuals.view": "View",
+    "manuals.modalHint": "If the document cannot be displayed, use the button below to open it on Google Drive.",
+    "manuals.openDrive": "Open in Drive",
+    "manuals.close": "Close",
+
+    "why.eyebrow": "WHY MEV AR-GE",
+    "why.title": "A Trusted Partner From Idea to Production",
+    "why.desc": "We combine our young engineering vision with manufacturing discipline to create measurable value in every project.",
+    "why.f1.title": "Rapid Prototyping",
+    "why.f1.desc": "An agile development process that turns ideas into working prototypes quickly.",
+    "why.f2.title": "Quality & Reliability",
+    "why.f2.desc": "Consistent, durable manufacturing results through rigorous testing processes.",
+    "why.f3.title": "Expert Engineering Team",
+    "why.f3.desc": "A multidisciplinary team experienced in both hardware and software.",
+    "why.f4.title": "Global Supply Network",
+    "why.f4.desc": "International sourcing and distribution capability through our import-export infrastructure.",
+
+    "contact.eyebrow": "CONTACT",
+    "contact.title": "We'd Love to Hear From You",
+    "contact.desc": "Fill out the form to discuss your project, or reach us directly.",
+    "contact.addressTitle": "Address",
+    "contact.phoneTitle": "Phone",
+    "contact.emailTitle": "Email",
+    "contact.hoursTitle": "Working Hours",
+    "contact.weekdays": "Monday - Friday",
+    "contact.weekend": "Saturday - Sunday",
+    "contact.closed": "Closed",
+    "contact.form.name": "Full Name",
+    "contact.form.namePh": "Your full name",
+    "contact.form.email": "Email",
+    "contact.form.emailPh": "you@example.com",
+    "contact.form.phone": "Phone",
+    "contact.form.subject": "Subject",
+    "contact.form.other": "Other",
+    "contact.form.message": "Message",
+    "contact.form.messagePh": "Tell us about your project...",
+    "contact.form.submit": "Send Message",
+    "contact.form.sending": "Sending...",
+    "contact.form.success": "Your message has been received! We'll get back to you shortly.",
+    "contact.form.errorName": "Please enter your name.",
+    "contact.form.errorEmail": "Please enter a valid email address.",
+    "contact.form.errorMessage": "Please enter your message.",
+
+    "footer.desc": "Your trusted engineering partner in PCB design, embedded software and industrial solutions.",
+    "footer.linksTitle": "Quick Links",
+    "footer.servicesTitle": "Our Services",
+    "footer.contactTitle": "Contact",
+    "footer.rights": "All rights reserved.",
+    "footer.madeIn": "Designed in Konya, Türkiye 🇹🇷",
+  }
+};
+
+/* ============================================================
+   LANGUAGE SWITCHER
+   ============================================================ */
+let currentLang = localStorage.getItem('mev-lang') || 'tr';
+
+function applyTranslations(lang) {
+  document.documentElement.lang = lang;
+  const dict = translations[lang];
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
+  });
+
+  document.title = lang === 'tr'
+    ? 'MEV Ar-Ge | Elektronik Kart Tasarımı & Gömülü Yazılım'
+    : 'MEV Ar-Ge | PCB Design & Embedded Software';
+
+  const thumb = document.querySelector('.lang-toggle-thumb');
+  const trLabel = document.getElementById('lang-label-tr');
+  const enLabel = document.getElementById('lang-label-en');
+  if (lang === 'en') {
+    thumb.style.transform = 'translateX(38px)';
+    enLabel.classList.add('text-white');
+    trLabel.classList.remove('text-white');
+  } else {
+    thumb.style.transform = 'translateX(0)';
+    trLabel.classList.add('text-white');
+    enLabel.classList.remove('text-white');
+  }
+}
+
+document.getElementById('lang-toggle').addEventListener('click', () => {
+  currentLang = currentLang === 'tr' ? 'en' : 'tr';
+  localStorage.setItem('mev-lang', currentLang);
+  applyTranslations(currentLang);
+});
+
+/* ============================================================
+   MOBILE MENU
+   ============================================================ */
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileOverlay = document.getElementById('mobile-overlay');
+
+function openMobileMenu() {
+  mobileMenu.classList.add('mobile-menu-open');
+  mobileOverlay.classList.remove('opacity-0', 'pointer-events-none');
+}
+function closeMobileMenu() {
+  mobileMenu.classList.remove('mobile-menu-open');
+  mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
+}
+document.getElementById('mobile-toggle').addEventListener('click', openMobileMenu);
+document.getElementById('mobile-close').addEventListener('click', closeMobileMenu);
+mobileOverlay.addEventListener('click', closeMobileMenu);
+document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', closeMobileMenu));
+
+/* ============================================================
+   HEADER SHRINK ON SCROLL + BACK TO TOP
+   ============================================================ */
+const headerInner = document.getElementById('header-inner');
+const backToTop = document.getElementById('back-to-top');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 40) {
+    headerInner.classList.add('h-16');
+    headerInner.classList.remove('h-20');
+    document.getElementById('site-header').classList.add('glass', 'border-b', 'border-white/10');
+  } else {
+    headerInner.classList.remove('h-16');
+    headerInner.classList.add('h-20');
+    document.getElementById('site-header').classList.remove('glass', 'border-b', 'border-white/10');
+  }
+
+  if (window.scrollY > 600) {
+    backToTop.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+  } else {
+    backToTop.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+  }
+}, { passive: true });
+
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+/* ============================================================
+   MANUAL MODAL
+   ============================================================ */
+const manualModal = document.getElementById('manual-modal');
+const manualModalTitle = document.getElementById('manual-modal-title');
+const manualModalFrame = document.getElementById('manual-modal-frame');
+const manualModalOpen = document.getElementById('manual-modal-open');
+
+function driveEmbedUrl(viewUrl) {
+  return viewUrl.replace('/view', '/preview');
+}
+
+function openManualModal(card) {
+  const model = card.getAttribute('data-model');
+  const link = card.getAttribute('data-link');
+  manualModalTitle.textContent = model;
+  manualModalFrame.src = driveEmbedUrl(link);
+  manualModalOpen.href = link;
+  manualModal.classList.remove('hidden');
+  manualModal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeManualModal() {
+  manualModal.classList.add('hidden');
+  manualModal.classList.remove('flex');
+  manualModalFrame.src = '';
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.manual-card').forEach(card => {
+  card.querySelector('.open-manual').addEventListener('click', () => openManualModal(card));
+});
+document.getElementById('manual-modal-close').addEventListener('click', closeManualModal);
+document.getElementById('manual-modal-close2').addEventListener('click', closeManualModal);
+document.getElementById('manual-modal-backdrop').addEventListener('click', closeManualModal);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeManualModal(); });
+
+/* ============================================================
+   CONTACT FORM (client-side simulation)
+   ============================================================ */
+const contactForm = document.getElementById('contact-form');
+const contactSubmit = document.getElementById('contact-submit');
+const contactSubmitLabel = document.getElementById('contact-submit-label');
+const contactSuccess = document.getElementById('contact-success');
+
+function fieldError(input, message) {
+  input.classList.add('border-red-400/70', 'focus:border-red-400/70');
+  let existing = input.parentElement.querySelector('.field-error-msg');
+  if (!existing) {
+    existing = document.createElement('p');
+    existing.className = 'field-error-msg text-red-400 text-xs mt-1.5';
+    input.parentElement.appendChild(existing);
+  }
+  existing.textContent = message;
+}
+function clearFieldError(input) {
+  input.classList.remove('border-red-400/70', 'focus:border-red-400/70');
+  const existing = input.parentElement.querySelector('.field-error-msg');
+  if (existing) existing.remove();
+}
+
+contactForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const dict = translations[currentLang];
+  const name = contactForm.elements['name'];
+  const email = contactForm.elements['email'];
+  const message = contactForm.elements['message'];
+
+  [name, email, message].forEach(clearFieldError);
+  let valid = true;
+
+  if (!name.value.trim()) { fieldError(name, dict['contact.form.errorName']); valid = false; }
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email.value.trim())) { fieldError(email, dict['contact.form.errorEmail']); valid = false; }
+  if (!message.value.trim()) { fieldError(message, dict['contact.form.errorMessage']); valid = false; }
+
+  if (!valid) return;
+
+  contactSubmit.disabled = true;
+  contactSubmit.classList.add('opacity-70', 'cursor-not-allowed');
+  contactSubmitLabel.textContent = dict['contact.form.sending'];
+
+  setTimeout(() => {
+    contactForm.reset();
+    contactSubmit.classList.add('hidden');
+    contactSuccess.classList.remove('hidden');
+    contactSuccess.classList.add('flex');
+
+    setTimeout(() => {
+      contactSubmit.disabled = false;
+      contactSubmit.classList.remove('opacity-70', 'cursor-not-allowed', 'hidden');
+      contactSubmitLabel.textContent = dict['contact.form.submit'];
+      contactSuccess.classList.add('hidden');
+      contactSuccess.classList.remove('flex');
+    }, 4500);
+  }, 1100);
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+applyTranslations(currentLang);
+</script>
+</body>
+</html>
