@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEV Ar-Ge | Elektronik Kart Tasarım & Gömülü Yazılım Çözümleri</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        mev: {
+                            dark: '#0B0F17',
+                            card: '#131B2E',
+                            border: '#1E293B',
+                            accent: '#1D4ED8',
+                            blue: '#2563EB',
+                            lightBlue: '#60A5FA',
+                            gray: '#4A4A4A',
+                            lightGray: '#9CA3AF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.3);
+        }
+        .glow-card:hover {
+            box-shadow: 0 0 30px -5px rgba(37, 99, 235, 0.25);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-mev-dark text-slate-100 font-sans antialiased selection:bg-mev-blue selection:text-white">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-mev-dark/80 backdrop-blur-md border-b border-mev-border/60 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- LOGO (SVG & Custom Styling based on Image) -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="flex items-center font-heading text-2xl sm:text-3xl font-extrabold tracking-wider">
+                        <span class="text-gray-400 group-hover:text-white transition-colors">M</span>
+                        <span class="text-gray-400 group-hover:text-white transition-colors">E</span>
+                        <span class="text-blue-600 group-hover:text-blue-500 transition-colors ml-0.5">V</span>
+                    </div>
+                    <div class="h-6 w-px bg-slate-700 mx-1 hidden sm:block"></div>
+                    <span class="text-xs tracking-widest text-slate-400 font-semibold uppercase hidden sm:block">Ar-Ge & Teknoloji</span>
+                </a>
+
+                <!-- DESKTOP MENU -->
+                <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+                    <!-- Home Icon Link -->
+                    <a href="#anasayfa" class="text-slate-300 hover:text-mev-lightBlue transition-colors p-2 rounded-lg hover:bg-slate-800/50" title="Ana Sayfa">
+                        <i class="fa-solid fa-house text-lg"></i>
+                    </a>
+                    <a href="#hizmetlerimiz" class="text-slate-300 hover:text-mev-lightBlue transition-colors">Hizmetlerimiz</a>
+                    <a href="#hakkimizda" class="text-slate-300 hover:text-mev-lightBlue transition-colors">Hakkımızda</a>
+                    <a href="#iletisim" class="text-slate-300 hover:text-mev-lightBlue transition-colors">İletişim</a>
+                </nav>
+
+                <!-- ACTION ICONS ON RIGHT (Guides Modal & Phone Icon) -->
+                <div class="hidden md:flex items-center gap-3">
+                    <!-- Document / Guide Icon Button -->
+                    <button id="open-guides-modal" class="p-2.5 bg-slate-800 hover:bg-blue-600/30 text-blue-400 hover:text-white border border-mev-border rounded-xl transition-all shadow-sm" title="Kullanım Kılavuzları">
+                        <i class="fa-solid fa-file-pdf text-base"></i>
+                    </button>
+                    
+                    <!-- Direct Phone Call Icon Button -->
+                    <a href="tel:+905396863365" class="p-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all shadow-md shadow-blue-600/20" title="Bizi Arayın: +90 539 686 33 65">
+                        <i class="fa-solid fa-phone text-base"></i>
+                    </a>
+                </div>
+
+                <!-- MOBILE MENU BUTTON -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-mev-card focus:outline-none" aria-label="Menüyü Aç">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- MOBILE MENU POPUP -->
+        <div id="mobile-menu" class="hidden md:hidden bg-mev-card border-b border-mev-border px-4 pt-2 pb-6 space-y-3">
+            <a href="#anasayfa" class="mobile-link block py-2 text-slate-200 hover:text-mev-lightBlue font-medium flex items-center gap-2">
+                <i class="fa-solid fa-house text-blue-400"></i> Ana Sayfa
+            </a>
+            <a href="#hizmetlerimiz" class="mobile-link block py-2 text-slate-200 hover:text-mev-lightBlue font-medium">Hizmetlerimiz</a>
+            <a href="#hakkimizda" class="mobile-link block py-2 text-slate-200 hover:text-mev-lightBlue font-medium">Hakkımızda</a>
+            <a href="#kilavuzlar" class="mobile-link block py-2 text-blue-400 font-medium flex items-center gap-2">
+                <i class="fa-solid fa-file-pdf"></i> Kullanım Kılavuzları
+            </a>
+            <a href="#iletisim" class="mobile-link block py-2 text-slate-200 hover:text-mev-lightBlue font-medium">İletişim</a>
+            
+            <div class="pt-2 flex gap-3">
+                <button id="mobile-open-guides" class="flex-1 py-2.5 bg-slate-800 text-blue-400 border border-mev-border font-medium text-xs rounded-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-pdf"></i> Kılavuzlar
+                </button>
+                <a href="tel:+905396863365" class="flex-1 py-2.5 bg-blue-600 text-white font-medium text-xs rounded-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-phone"></i> Hemen Ara
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="anasayfa" class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden bg-grid-pattern">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-600/15 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-6">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    2023'ten Beri İleri Teknoloji & Mühendislik
+                </div>
+                <h1 class="font-heading text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight mb-6">
+                    Gömülü Sistemler ve Elektronik Kart Tasarımında <br class="hidden sm:inline">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-slate-200">
+                        Güvenilir Çözüm Ortağınız
+                    </span>
+                </h1>
+                <p class="text-base sm:text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+                    MEV Ar-Ge; Elektronik Kart Tasarımı, Gömülü Yazılım, Endüstriyel Çözümler ve Küresel İthalat/İhracat ağı ile projelerinizi hayata geçirir.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#hizmetlerimiz" class="w-full sm:w-auto px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2">
+                        <span>Hizmetlerimizi İnceleyin</span>
+                        <i class="fa-solid fa-arrow-down text-sm"></i>
+                    </a>
+                    <a href="https://wa.me/905396863365" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-7 py-3.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/30 font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>WhatsApp İletişim</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- STATS BAR -->
+            <div class="mt-16 sm:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 border-t border-mev-border/60 pt-10">
+                <div class="p-4 rounded-xl bg-mev-card/50 border border-mev-border/40 text-center">
+                    <div class="text-3xl font-extrabold font-heading text-white mb-1">2023</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">Kuruluş Yılı</div>
+                </div>
+                <div class="p-4 rounded-xl bg-mev-card/50 border border-mev-border/40 text-center">
+                    <div class="text-3xl font-extrabold font-heading text-blue-400 mb-1">%100</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">Yerli Ar-Ge Odaklılık</div>
+                </div>
+                <div class="p-4 rounded-xl bg-mev-card/50 border border-mev-border/40 text-center">
+                    <div class="text-3xl font-extrabold font-heading text-white mb-1">Endüstri 4.0</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">Uyumlu Çözümler</div>
+                </div>
+                <div class="p-4 rounded-xl bg-mev-card/50 border border-mev-border/40 text-center">
+                    <div class="text-3xl font-extrabold font-heading text-blue-400 mb-1">Küresel</div>
+                    <div class="text-xs sm:text-sm text-slate-400 font-medium">İthalat & İhracat</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HİZMETLERİMİZ (SERVICES) SECTION -->
+    <section id="hizmetlerimiz" class="py-20 bg-slate-950 border-t border-mev-border/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                    <i class="fa-solid fa-layer-group"></i>
+                    Faaliyet Alanlarımız
+                </div>
+                <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mb-4">
+                    Mühendislik ve Ar-Ge Hizmetlerimiz
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Projenizin ilk fikrinden nihai üretimine kadar ihtiyaç duyulan tüm teknik süreçleri kapsıyoruz.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="p-8 rounded-2xl bg-mev-card border border-mev-border glow-card transition-all group">
+                    <div class="w-14 h-14 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-microchip text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-3">Elektronik Kart Tasarımı & İmalatı</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4">
+                        Şematik tasarım, PCB çizimi, prototip imalatı ve SMD/THT dizgi süreçlerinde profesyonel çözümler sunuyoruz.
+                    </p>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="p-8 rounded-2xl bg-mev-card border border-mev-border glow-card transition-all group">
+                    <div class="w-14 h-14 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-code text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-3">Gömülü Yazılım (Firmware)</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4">
+                        ARM, STM32, ESP32 ve PIC mimarileri için yüksek performanslı, optimizasyonlu C/C++ gömülü yazılımlar geliştiriyoruz.
+                    </p>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="p-8 rounded-2xl bg-mev-card border border-mev-border glow-card transition-all group">
+                    <div class="w-14 h-14 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-flask text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-3">Ar-Ge ve Projelendirme</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4">
+                        Yenilikçi teknoloji fikirlerinin teknik fizibilite çalışmalarını yürütüyor ve seri üretime uygun prototipler hazırlıyoruz.
+                    </p>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="p-8 rounded-2xl bg-mev-card border border-mev-border glow-card transition-all group">
+                    <div class="w-14 h-14 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-industry text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-3">Endüstriyel Çözümler</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4">
+                        Ağır saha koşullarına dayanıklı, endüstriyel otomasyon ve IoT (Nesnelerin İnterneti) cihaz sistemleri kuruyoruz.
+                    </p>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="p-8 rounded-2xl bg-mev-card border border-mev-border glow-card transition-all group md:col-span-2 lg:col-span-2">
+                    <div class="w-14 h-14 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-globe text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-3">İthalat & İhracat</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4">
+                        Elektronik bileşen, yarı iletken ve özel donanım parçalarının tedariğinde uluslararası kaliteli ithalat ve ihracat köprüsü sağlıyoruz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HAKKIMIZDA (ABOUT US) SECTION -->
+    <section id="hakkimizda" class="py-20 bg-mev-dark border-t border-mev-border/40 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="lg:col-span-7">
+                    <div class="inline-flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-building"></i>
+                        Kurumsal Profil
+                    </div>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mb-6">
+                        Teknoloji Üreten, Yenilikçi Mühendislik Yaklaşımı
+                    </h2>
+                    <p class="text-slate-300 leading-relaxed mb-4">
+                        <strong class="text-white">MEV Ar-Ge Teknolojileri</strong>, 2023 yılında Konya Selçuklu merkezli olarak kurulan; yüksek teknoloji odaklı elektronik devre kartı tasarımı, gömülü sistemler ve endüstriyel otomasyon çözümleri geliştiren bir mühendislik firmasıdır.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-6">
+                        Sanayinin ve modern cihaz ekosistemlerinin ihtiyaç duyduğu donanımsal ve yazılımsal altyapıları sıfırdan prototipe, prototipten seri üretime kadar olan tüm süreçlerde titizlikle geliştiriyoruz.
+                    </p>
+                </div>
+
+                <!-- Visual Card -->
+                <div class="lg:col-span-5">
+                    <div class="relative bg-gradient-to-br from-mev-card to-slate-900 border border-mev-border rounded-2xl p-6 sm:p-8 glow-effect">
+                        <div class="flex items-center justify-between pb-6 border-b border-mev-border">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <span class="text-xs font-mono text-slate-500">MEV-CORE-v2026.sys</span>
+                        </div>
+
+                        <div class="py-6 font-mono text-xs text-slate-300 space-y-3">
+                            <div class="text-blue-400">// MEV Ar-Ge Temel Yetkinlik Matrisi</div>
+                            <div><span class="text-purple-400">const</span> <span class="text-yellow-300">company</span> = {</div>
+                            <div class="pl-4">name: <span class="text-green-400">"MEV Ar-Ge Teknolojileri"</span>,</div>
+                            <div class="pl-4">location: <span class="text-green-400">"Konya, Türkiye"</span>,</div>
+                            <div class="pl-4">established: <span class="text-orange-400">2023</span>,</div>
+                            <div class="pl-4">status: <span class="text-blue-300">"Active_Innovation"</span></div>
+                            <div>};</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KILAVUZLAR (MANUALS) SECTION -->
+    <section id="kilavuzlar" class="py-20 bg-slate-950 border-t border-mev-border/40 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    Teknik Dokümanlar
+                </div>
+                <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mb-4">
+                    Kullanım Kılavuzları
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Ürünlerimize ait teknik kullanım ve kurulum direktiflerini aşağıdan inceleyebilirsiniz.
+                </p>
+            </div>
+
+            <!-- Manual Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- 4200 -->
+                <div class="bg-mev-card border border-mev-border rounded-2xl p-6 text-center transition-all hover:border-blue-500/50 flex flex-col justify-between">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl py-10 mb-6 flex flex-col items-center justify-center">
+                        <div class="text-5xl font-black font-heading text-white tracking-widest">4200</div>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-2">4200 Kodlu Kılavuz</h3>
+                        <a href="https://drive.google.com/file/d/1Q4KB0L7EbWSYoM7BKUZsZsBMxfCWTAsD/view" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>İndirmek için tıklayınız!</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4201 -->
+                <div class="bg-mev-card border border-mev-border rounded-2xl p-6 text-center transition-all hover:border-blue-500/50 flex flex-col justify-between">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl py-10 mb-6 flex flex-col items-center justify-center">
+                        <div class="text-5xl font-black font-heading text-white tracking-widest">4201</div>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-2">4201 Kodlu Kılavuz</h3>
+                        <a href="https://drive.google.com/file/d/1MbbRjGLFwkAey7ZkoZT69TGI5uYEdQhn/view" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>İndirmek için tıklayınız!</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4202 -->
+                <div class="bg-mev-card border border-mev-border rounded-2xl p-6 text-center transition-all hover:border-blue-500/50 flex flex-col justify-between">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl py-10 mb-6 flex flex-col items-center justify-center">
+                        <div class="text-5xl font-black font-heading text-white tracking-widest">4202</div>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-2">4202 Kodlu Kılavuz</h3>
+                        <a href="https://drive.google.com/file/d/1weYzgMUOWNRlBW32dfTiWbu2ZNP2Vqa8/view" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>İndirmek için tıklayınız!</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4203 -->
+                <div class="bg-mev-card border border-mev-border rounded-2xl p-6 text-center transition-all hover:border-blue-500/50 flex flex-col justify-between">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl py-10 mb-6 flex flex-col items-center justify-center">
+                        <div class="text-5xl font-black font-heading text-white tracking-widest">4203</div>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white mb-2">4203 Kodlu Kılavuz</h3>
+                        <a href="https://drive.google.com/file/d/1Hz0SBYGFWukT1rYXteQEVXEIOmorctTL/view" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>İndirmek için tıklayınız!</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- İLETİŞİM (CONTACT) SECTION -->
+    <section id="iletisim" class="py-20 bg-mev-dark border-t border-mev-border/40 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                
+                <!-- Contact Details -->
+                <div class="lg:col-span-5">
+                    <div class="inline-flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-envelope"></i>
+                        Bize Ulaşın
+                    </div>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-white mb-6">
+                        İletişim Bilgilerimiz
+                    </h2>
+
+                    <div class="space-y-4">
+                        <!-- Phone -->
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-mev-card border border-mev-border">
+                            <div class="p-3 bg-blue-600/20 text-blue-400 rounded-lg">
+                                <i class="fa-solid fa-phone text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Telefon</h4>
+                                <a href="tel:+905396863365" class="text-sm font-semibold text-white hover:text-blue-400 transition-colors block">
+                                    +90 539 686 33 65
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-mev-card border border-mev-border">
+                            <div class="p-3 bg-blue-600/20 text-blue-400 rounded-lg">
+                                <i class="fa-solid fa-envelope text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">E-Posta</h4>
+                                <a href="mailto:ahmet.bas@mevarge.com" class="text-sm font-medium text-white hover:text-blue-400 transition-colors">
+                                    ahmet.bas@mevarge.com
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-mev-card border border-mev-border">
+                            <div class="p-3 bg-blue-600/20 text-blue-400 rounded-lg">
+                                <i class="fa-solid fa-location-dot text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Adres</h4>
+                                <p class="text-sm text-slate-200 leading-relaxed">
+                                    Fatih Mh. Koray Sk. No:27 <br>
+                                    Selçuklu / Konya / Türkiye
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <div class="lg:col-span-7">
+                    <div class="bg-mev-card border border-mev-border p-6 sm:p-8 rounded-2xl relative">
+                        <h3 class="font-heading text-xl font-bold text-white mb-2">Bize Mesaj Gönderin</h3>
+                        
+                        <form id="contact-form" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Adınız Soyadınız *</label>
+                                    <input type="text" required class="w-full bg-slate-900 border border-mev-border rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">E-Posta Adresiniz *</label>
+                                    <input type="email" required class="w-full bg-slate-900 border border-mev-border rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Mesajınız *</label>
+                                <textarea rows="4" required class="w-full bg-slate-900 border border-mev-border rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg transition-all shadow-lg flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Gönder</span>
+                            </button>
+                        </form>
+
+                        <!-- Toast Notification -->
+                        <div id="toast-message" class="hidden absolute inset-0 bg-mev-card/95 rounded-2xl flex flex-col items-center justify-center p-6 text-center backdrop-blur-sm z-20">
+                            <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-4 border border-green-500/40">
+                                <i class="fa-solid fa-check text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-bold text-white mb-2">Mesajınız Alındı!</h4>
+                            <p class="text-xs text-slate-300 mb-6">En kısa sürede dönüş yapacağız.</p>
+                            <button id="toast-close" class="px-5 py-2 bg-slate-800 text-white text-xs font-medium rounded-lg">Tamam</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- GUIDES POPUP MODAL -->
+    <div id="guides-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-mev-card border border-mev-border rounded-2xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+            <button id="close-guides-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="font-heading text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-file-pdf text-blue-400"></i> Kullanım Kılavuzları
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a href="https://drive.google.com/file/d/1Q4KB0L7EbWSYoM7BKUZsZsBMxfCWTAsD/view" target="_blank" class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-blue-500 transition-all flex items-center justify-between">
+                    <span class="font-bold text-lg text-white">4200 Kılavuzu</span>
+                    <i class="fa-solid fa-download text-blue-400"></i>
+                </a>
+                <a href="https://drive.google.com/file/d/1MbbRjGLFwkAey7ZkoZT69TGI5uYEdQhn/view" target="_blank" class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-blue-500 transition-all flex items-center justify-between">
+                    <span class="font-bold text-lg text-white">4201 Kılavuzu</span>
+                    <i class="fa-solid fa-download text-blue-400"></i>
+                </a>
+                <a href="https://drive.google.com/file/d/1weYzgMUOWNRlBW32dfTiWbu2ZNP2Vqa8/view" target="_blank" class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-blue-500 transition-all flex items-center justify-between">
+                    <span class="font-bold text-lg text-white">4202 Kılavuzu</span>
+                    <i class="fa-solid fa-download text-blue-400"></i>
+                </a>
+                <a href="https://drive.google.com/file/d/1Hz0SBYGFWukT1rYXteQEVXEIOmorctTL/view" target="_blank" class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-blue-500 transition-all flex items-center justify-between">
+                    <span class="font-bold text-lg text-white">4203 Kılavuzu</span>
+                    <i class="fa-solid fa-download text-blue-400"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-mev-dark border-t border-mev-border py-8 text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 font-heading text-lg font-bold">
+                <span class="text-white">MEV Ar-Ge</span>
+            </div>
+            <div class="flex gap-6">
+                <a href="#anasayfa" class="hover:text-white">Ana Sayfa</a>
+                <a href="#hizmetlerimiz" class="hover:text-white">Hizmetler</a>
+                <a href="#hakkimizda" class="hover:text-white">Hakkımızda</a>
+                <a href="#kilavuzlar" class="hover:text-white text-blue-400">Kılavuzlar</a>
+                <a href="#iletisim" class="hover:text-white">İletişim</a>
+            </div>
+            <div>© 2023-2026 MEV Ar-Ge. Tüm hakları saklıdır.</div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        // Modal Popup Logic
+        const modal = document.getElementById('guides-modal');
+        const openBtn = document.getElementById('open-guides-modal');
+        const mobileOpenBtn = document.getElementById('mobile-open-guides');
+        const closeBtn = document.getElementById('close-guides-modal');
+
+        const openModal = () => modal.classList.remove('hidden');
+        const closeModal = () => modal.classList.add('hidden');
+
+        if(openBtn) openBtn.addEventListener('click', openModal);
+        if(mobileOpenBtn) mobileOpenBtn.addEventListener('click', openModal);
+        if(closeBtn) closeBtn.addEventListener('click', closeModal);
+
+        // Form Submit
+        const form = document.getElementById('contact-form');
+        const toast = document.getElementById('toast-message');
+        const toastClose = document.getElementById('toast-close');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            toast.classList.remove('hidden');
+            form.reset();
+        });
+        toastClose.addEventListener('click', () => toast.classList.add('hidden'));
+    </script>
+</body>
+</html>
